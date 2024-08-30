@@ -32,6 +32,15 @@ unique_users = FOREACH (GROUP ratings BY userId) GENERATE group AS userId;
 DUMP unique_users;
 ```
 
+-- Task d: Find the Count of Movies with Ratings Greater Than 3
+```
+ratings = LOAD '/ratings.csv' USING PigStorage(',') AS (movieId:int, title:chararray, userId:int, rating:float, genreId:int);
+high_ratings = FILTER ratings BY rating > 3;
+grouped_high_ratings = GROUP high_ratings BY movieId;
+high_rating_count = FOREACH grouped_high_ratings GENERATE group AS movieId, COUNT(high_ratings) AS numHighRatings;
+high_rating_movie_count = FILTER high_rating_count BY numHighRatings > 0;
+DUMP high_rating_movie_count;
+```
 BACK UP
 ```
 -- Load the ratings data
@@ -53,16 +62,6 @@ total_count = FOREACH (GROUP movie_count ALL) GENERATE SUM(movie_count.count) AS
 -- Dump the result to display the total count
 DUMP total_count;
 
-```
-
--- Task d: Find the Count of Movies with Ratings Greater Than 3
-```
-ratings = LOAD '/ratings.csv' USING PigStorage(',') AS (movieId:int, title:chararray, userId:int, rating:float, genreId:int);
-high_ratings = FILTER ratings BY rating > 3;
-grouped_high_ratings = GROUP high_ratings BY movieId;
-high_rating_count = FOREACH grouped_high_ratings GENERATE group AS movieId, COUNT(high_ratings) AS numHighRatings;
-high_rating_movie_count = FILTER high_rating_count BY numHighRatings > 0;
-DUMP high_rating_movie_count;
 ```
 
 -- Task e: Find the Max, Min, and Average Ratings for All Movies
